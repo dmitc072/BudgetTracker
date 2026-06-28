@@ -1,5 +1,4 @@
 using BudgetTracker.Core.Models;
-using BudgetTracker;
 
 namespace BudgetTracker
 {
@@ -35,27 +34,36 @@ namespace BudgetTracker
         // Duane's half (requirements 7-12): calculations and categories
         public decimal GetTotalIncome()
         {
-            return 0m;
+            return transactions
+                .Where(t => t.Type == TransactionType.Income)
+                .Sum(t => t.Amount);
         }
 
         public decimal GetTotalExpenses()
         {
-            throw new NotImplementedException();
+            return transactions
+                .Where(t => t.Type == TransactionType.Expense)
+                .Sum(t => t.Amount);
         }
 
         public decimal GetBalance()
         {
-            throw new NotImplementedException();
+            return GetTotalIncome() - GetTotalExpenses();
         }
 
         public Dictionary<string, List<Transaction>> GetTransactionsByCategory()
         {
-            throw new NotImplementedException();
+            return transactions
+                .GroupBy(t => t.Category)
+                .ToDictionary(g => g.Key, g => g.ToList());
         }
 
         public decimal GetCategoryTotal(string category)
         {
-            throw new NotImplementedException();
+            return transactions
+                .Where(t => t.Type == TransactionType.Expense &&
+                            t.Category == category)
+                .Sum(t => t.Amount);
         }
     }
 }

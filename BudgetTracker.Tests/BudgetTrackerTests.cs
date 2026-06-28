@@ -139,5 +139,68 @@ namespace BudgetTracker.Tests
                 transactions.Any(t => t.Description == "Freelance"),
                 Is.True);
         }
+
+        [Test]
+        public void GetTotalIncome_ShouldAddAllIncomeTransactions()
+        {
+            tracker.AddTransaction(new Transaction(1000m, "Paycheck", "Job", DateTime.Today, TransactionType.Income));
+            tracker.AddTransaction(new Transaction(250m, "Freelance", "Side Job", DateTime.Today, TransactionType.Income));
+            tracker.AddTransaction(new Transaction(50m, "Groceries", "Food", DateTime.Today, TransactionType.Expense));
+
+            Assert.That(tracker.GetTotalIncome(), Is.EqualTo(1250m));
+        }
+
+        [Test]
+        public void GetTotalExpenses_ShouldAddAllExpenseTransactions()
+        {
+            tracker.AddTransaction(new Transaction(1000m, "Paycheck", "Job", DateTime.Today, TransactionType.Income));
+            tracker.AddTransaction(new Transaction(50m, "Groceries", "Food", DateTime.Today, TransactionType.Expense));
+            tracker.AddTransaction(new Transaction(25m, "Gas", "Transportation", DateTime.Today, TransactionType.Expense));
+
+            Assert.That(tracker.GetTotalExpenses(), Is.EqualTo(75m));
+        }
+
+        [Test]
+        public void GetBalance_ShouldReturnIncomeMinusExpenses()
+        {
+            tracker.AddTransaction(new Transaction(1000m, "Paycheck", "Job", DateTime.Today, TransactionType.Income));
+            tracker.AddTransaction(new Transaction(100m, "Groceries", "Food", DateTime.Today, TransactionType.Expense));
+            tracker.AddTransaction(new Transaction(50m, "Gas", "Transportation", DateTime.Today, TransactionType.Expense));
+
+            Assert.That(tracker.GetBalance(), Is.EqualTo(850m));
+        }
+
+        [Test]
+        public void GetTransactionsByCategory_ShouldGroupTransactionsByCategory()
+        {
+            tracker.AddTransaction(new Transaction(50m, "Groceries", "Food", DateTime.Today, TransactionType.Expense));
+            tracker.AddTransaction(new Transaction(25m, "Lunch", "Food", DateTime.Today, TransactionType.Expense));
+            tracker.AddTransaction(new Transaction(40m, "Gas", "Transportation", DateTime.Today, TransactionType.Expense));
+
+            var grouped = tracker.GetTransactionsByCategory();
+
+            Assert.That(grouped.ContainsKey("Food"), Is.True);
+            Assert.That(grouped.ContainsKey("Transportation"), Is.True);
+            Assert.That(grouped["Food"].Count, Is.EqualTo(2));
+            Assert.That(grouped["Transportation"].Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void GetCategoryTotal_ShouldReturnTotalSpendingForSpecificCategory()
+        {
+            tracker.AddTransaction(new Transaction(50m, "Groceries", "Food", DateTime.Today, TransactionType.Expense));
+            tracker.AddTransaction(new Transaction(25m, "Lunch", "Food", DateTime.Today, TransactionType.Expense));
+            tracker.AddTransaction(new Transaction(1000m, "Paycheck", "Job", DateTime.Today, TransactionType.Income));
+
+            Assert.That(tracker.GetCategoryTotal("Food"), Is.EqualTo(75m));
+        }
+
+        [Test]
+        public void GetCategoryTotal_WithNoTransactionsInCategory_ShouldReturnZero()
+        {
+            tracker.AddTransaction(new Transaction(50m, "Groceries", "Food", DateTime.Today, TransactionType.Expense));
+
+            Assert.That(tracker.GetCategoryTotal("Entertainment"), Is.EqualTo(0m));
+        }
     }
 }
