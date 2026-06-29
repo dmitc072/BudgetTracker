@@ -1,8 +1,5 @@
 # BudgetTracker
 
-**Group 4 — SWE 6673 Software Testing & Verification**  
-Duane Mitchell, Megan Morgan
-
 ## Project Overview
 
 A Personal Budget Tracker built in C#. Users can add income and expense transactions, organize them by category, and calculate their current balance. Sprint 1 focuses entirely on business logic so it can be fully tested using NUnit without a GUI.
